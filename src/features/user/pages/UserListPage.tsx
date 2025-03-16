@@ -19,9 +19,15 @@ const UserListPage: React.FC = () => {
   ];
 
   if (loading) return <Spin />;
-  if (error) return <div>Error: {error}</div>;
+  if (error) return <div style={{ color: 'red' }}>Error: {error}</div>;
 
-  return <Table columns={columns} dataSource={users} rowKey="userId" />;
+  return (
+    <div>
+      <h2>User List</h2>
+      <Table columns={columns} dataSource={users} rowKey="userId" />
+    </div>
+  );
 };
 
 export default UserListPage;
+  
