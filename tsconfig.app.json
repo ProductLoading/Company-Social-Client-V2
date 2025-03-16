@@ -6,6 +6,10 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]  // Alias tanımı burada yapılıyor
+    },
 
     /* Bundler mode */
     "moduleResolution": "bundler",

@@ -1,9 +1,9 @@
-// src/app/store.ts
 import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // localStorage
 import rootReducer from './rootReducer';
-import thunk from 'redux-thunk';
+import { thunk } from 'redux-thunk';
+// import thunk from 'redux-thunk'; // Tekrar default olarak kullanın
 
 const persistConfig = {
   key: 'root',
@@ -16,7 +16,10 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
   reducer: persistedReducer,
-  middleware: [thunk],
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false, // Persist işlemi nedeniyle serileştirilebilirlik uyarısını kapatabilirsiniz
+    }).concat(thunk),
 });
 
 export const persistor = persistStore(store);
