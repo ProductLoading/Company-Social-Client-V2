@@ -1,13 +1,48 @@
 import { gql } from '@apollo/client';
 
 export const GET_USERS = gql`
-  query GetUsers($limit: Int, $offset: Int) {
+  query GetUsers($limit: Float, $offset: Float) {
     users(limit: $limit, offset: $offset) {
       userId
       email
       firstName
       lastName
       status
+
+      # Yeni eklediğimiz alt alanlar
+      office {
+        officeId
+        city
+        buildingName
+      }
+
+      roles {
+        roleId
+        name
+      }
+
+      managedDepartments {
+        departmentId
+        name
+      }
+
+      managedTeams {
+        teamId
+        name
+      }
+
+      posts {
+        postId
+        title
+        content
+      }
+
+      userTeams {
+        team {
+          teamId
+          name
+        }
+      }
     }
   }
 `;

@@ -9,7 +9,7 @@ interface UserTableProps {
 
 const UserTable: React.FC<UserTableProps> = ({ users, loading = false }) => {
     const columns = [
-        { title: 'ID', dataIndex: 'userId', key: 'userId' },
+        // { title: 'ID', dataIndex: 'userId', key: 'userId' },
         { title: 'Email', dataIndex: 'email', key: 'email' },
         { title: 'First Name', dataIndex: 'firstName', key: 'firstName' },
         { title: 'Last Name', dataIndex: 'lastName', key: 'lastName' },
