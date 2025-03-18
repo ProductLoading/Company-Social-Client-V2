@@ -9,7 +9,7 @@ export const GET_USERS = gql`
       lastName
       status
 
-      # Yeni eklediğimiz alt alanlar
+
       office {
         officeId
         city

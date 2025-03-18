@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import apolloClient from '@/graphql/apolloClient';
 import { GET_USERS, GET_USER } from './userQueries';
-import { REGISTER_USER, LOGIN_USER, UPDATE_USER } from './userMutations';
+import { REGISTER_MUTATION, LOGIN_USER, UPDATE_USER } from './userMutations';
 import { User } from './types';
 
 interface UserState {
@@ -21,7 +21,7 @@ const initialState: UserState = {
 };
 
 // Kullanıcıları getir
-export const fetchUsers = createAsyncThunk('user/fetchUsers', async () => {
+export const fetchUsers = createAsyncThunk('user/fetchUsers', async () => {y
   const { data } = await apolloClient.query({ query: GET_USERS });
   return data.users;
 });
@@ -41,7 +41,7 @@ export const fetchUserById = createAsyncThunk(
 // Kayıt
 export const registerUser = createAsyncThunk('user/registerUser', async (input: Partial<User>) => {
   const { data } = await apolloClient.mutate({
-    mutation: REGISTER_USER,
+    mutation: REGISTER_MUTATION,
     variables: { input },
   });
   // data.register -> accessToken döndürüyor
