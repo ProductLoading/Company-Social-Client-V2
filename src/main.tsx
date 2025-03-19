@@ -8,6 +8,7 @@ import { ConfigProvider } from 'antd';
 import App from './App';
 import apolloClient from './graphql/apolloClient';
 import { store, persistor } from './app/store';
+import ApolloProviderWithAuth from './graphql/ApolloProviderWithAuth';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
@@ -15,7 +16,8 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       <ReduxProvider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <ConfigProvider>
-            <App />
+            <ApolloProviderWithAuth>
+              <App /></ApolloProviderWithAuth>
           </ConfigProvider>
         </PersistGate>
       </ReduxProvider>

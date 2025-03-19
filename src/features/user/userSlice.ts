@@ -21,7 +21,7 @@ const initialState: UserState = {
 };
 
 // Kullanıcıları getir
-export const fetchUsers = createAsyncThunk('user/fetchUsers', async () => {y
+export const fetchUsers = createAsyncThunk('user/fetchUsers', async () => {
   const { data } = await apolloClient.query({ query: GET_USERS });
   return data.users;
 });

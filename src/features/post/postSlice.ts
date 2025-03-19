@@ -1,9 +1,9 @@
-// src/features/post/postSlice.ts
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import apolloClient from '@/graphql/apolloClient';
 import { GET_POSTS, GET_POST } from './postQueries';
-import { CREATE_POST, UPDATE_POST, DELETE_POST } from './postMutations';
-import { Post } from './types';
+import { CREATE_POST, DELETE_POST, UPDATE_POST } from './postMutations';
+import { RootState } from '@/app/store';
+import type { Post, CreatePostInput, UpdatePostInput } from './types';
 
 interface PostState {
   posts: Post[];
@@ -19,58 +19,123 @@ const initialState: PostState = {
   error: null,
 };
 
-// ✅ Postları getir
+// **FETCH ALL POSTS (posts)**
 export const fetchPosts = createAsyncThunk('post/fetchPosts', async () => {
   const { data } = await apolloClient.query({ query: GET_POSTS });
-  return data.getPosts;
+  return data.posts;
 });
 
-// ✅ Tek post getir
+// **FETCH SINGLE POST (post)**
 export const fetchPostById = createAsyncThunk('post/fetchPostById', async (postId: string) => {
-  const { data } = await apolloClient.query({ query: GET_POST, variables: { postId } });
-  return data.getPost;
+  const { data } = await apolloClient.query({
+    query: GET_POST,
+    variables: { postId },
+  });
+  return data.post;
 });
 
-// ✅ Yeni post oluştur
-export const createPost = createAsyncThunk('post/createPost', async (input: any) => {
-  const { data } = await apolloClient.mutate({ mutation: CREATE_POST, variables: { input } });
-  return data.createPost;
-});
+// **CREATE POST**
+export const createPost = createAsyncThunk(
+  'post/createPost',
+  async (input: CreatePostInput, { getState }) => {
+    const state = getState() as RootState;
+    const token = state.user.token; // Redux store'dan token al
+    const { data } = await apolloClient.mutate({
+      mutation: CREATE_POST,
+      variables: { createPostInput: input },
+      context: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    });
+    return data.createPost;
+  }
+);
 
-// ✅ Post güncelle
-export const updatePost = createAsyncThunk('post/updatePost', async (input: any) => {
-  const { data } = await apolloClient.mutate({ mutation: UPDATE_POST, variables: { input } });
-  return data.updatePost;
-});
+// **DELETE POST**
+export const deletePost = createAsyncThunk(
+  'post/deletePost',
+  async (postId: string, { getState }) => {
+    const state = getState() as RootState;
+    const token = state.user.token;
+    await apolloClient.mutate({
+      mutation: DELETE_POST,
+      variables: { postId },
+      context: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    });
+    return postId;
+  }
+);
 
-// ✅ Post sil
-export const deletePost = createAsyncThunk('post/deletePost', async (postId: string) => {
-  await apolloClient.mutate({ mutation: DELETE_POST, variables: { postId } });
-  return postId;
-});
+// **UPDATE POST (Opsiyonel)**
+export const updatePost = createAsyncThunk(
+  'post/updatePost',
+  async (input: UpdatePostInput, { getState }) => {
+    const state = getState() as RootState;
+    const token = state.user.token;
+    const { data } = await apolloClient.mutate({
+      mutation: UPDATE_POST,
+      variables: { updatePostInput: input },
+      context: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    });
+    return data.updatePost;
+  }
+);
 
 const postSlice = createSlice({
   name: 'post',
   initialState,
-  reducers: {},
+  reducers: {
+    clearSelectedPost: (state) => {
+      state.selectedPost = null;
+    },
+  },
   extraReducers: (builder) => {
-    builder.addCase(fetchPosts.fulfilled, (state, action) => {
-      state.posts = action.payload;
-    });
-    builder.addCase(fetchPostById.fulfilled, (state, action) => {
-      state.selectedPost = action.payload;
-    });
-    builder.addCase(createPost.fulfilled, (state, action) => {
-      state.posts.push(action.payload);
-    });
-    builder.addCase(updatePost.fulfilled, (state, action) => {
-      const idx = state.posts.findIndex((p) => p.id === action.payload.id);
-      if (idx !== -1) state.posts[idx] = action.payload;
-    });
-    builder.addCase(deletePost.fulfilled, (state, action) => {
-      state.posts = state.posts.filter((p) => p.id !== action.payload);
-    });
+    builder
+      .addCase(fetchPosts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPosts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.posts = action.payload;
+      })
+      .addCase(fetchPosts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to fetch posts';
+      })
+      .addCase(fetchPostById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.selectedPost = action.payload;
+      })
+      .addCase(createPost.fulfilled, (state, action) => {
+        state.loading = false;
+        state.posts.push(action.payload);
+      })
+      .addCase(deletePost.fulfilled, (state, action) => {
+        state.loading = false;
+        state.posts = state.posts.filter((p) => p.postId !== action.payload);
+      })
+      .addCase(updatePost.fulfilled, (state, action) => {
+        state.loading = false;
+        const updated = action.payload;
+        const idx = state.posts.findIndex((p) => p.postId === updated.postId);
+        if (idx !== -1) state.posts[idx] = updated;
+        if (state.selectedPost?.postId === updated.postId) {
+          state.selectedPost = updated;
+        }
+      });
   },
 });
 
+export const { clearSelectedPost } = postSlice.actions;
 export default postSlice.reducer;

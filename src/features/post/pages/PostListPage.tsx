@@ -1,24 +1,37 @@
 // src/features/post/pages/PostListPage.tsx
-import React, { useEffect } from 'react';
-import { Table, Spin } from 'antd';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { fetchPosts } from '../postSlice';
+import React from 'react';
+import { useQuery } from '@apollo/client';
+import { GET_POSTS } from '../postQueries';
+import { Spin, Card, Button } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 const PostListPage: React.FC = () => {
-    const dispatch = useAppDispatch();
-    const { posts, loading } = useAppSelector((state) => state.post);
+  const navigate = useNavigate();
+  const { data, loading, error } = useQuery(GET_POSTS);
 
-    useEffect(() => {
-        dispatch(fetchPosts());
-    }, [dispatch]);
+  if (loading) return <Spin />;
+  if (error) return <p style={{ color: 'red' }}>Error: {error.message}</p>;
 
-    const columns = [
-        { title: 'Title', dataIndex: 'title', key: 'title' },
-        { title: 'Content', dataIndex: 'content', key: 'content' },
-        { title: 'User', dataIndex: ['user', 'firstName'], key: 'user' },
-    ];
+  const posts = data?.getPosts || [];
 
-    return loading ? <Spin /> : <Table columns={columns} dataSource={posts} rowKey="id" />;
+  return (
+    <div>
+      <h2>All Posts</h2>
+      <Button type="primary" onClick={() => navigate('/posts/create')}>
+        Create Post
+      </Button>
+      {posts.map((post: any) => (
+        <Card
+          key={post.postId}
+          style={{ marginTop: 16 }}
+          title={post.title}
+          onClick={() => navigate(`/posts/${post.postId}`)}
+        >
+          <p>{post.content}</p>
+        </Card>
+      ))}
+    </div>
+  );
 };
 
 export default PostListPage;

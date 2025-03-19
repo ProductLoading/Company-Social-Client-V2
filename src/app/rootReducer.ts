@@ -1,16 +1,10 @@
 import { combineReducers } from '@reduxjs/toolkit';
-import userReducer from '../features/user/userSlice';
 import postReducer from '../features/post/postSlice';
-// import commentReducer from '../features/comment/commentSlice';
-// ... diğer slice importları
+import userReducer from '../features/user/userSlice';
 
 const rootReducer = combineReducers({
-  user: userReducer,
   post: postReducer,
-  // comment: commentReducer,
-  // group: groupReducer,
-  // event: eventReducer,
-  // poll: pollReducer,
+  user: userReducer, // ✅ Artık Promise değil, doğrudan reducer
 });
 
 export default rootReducer;

@@ -3,7 +3,7 @@ import { gql } from '@apollo/client';
 
 export const GET_POSTS = gql`
   query GetPosts {
-    getPosts {
+    posts {  # <-- Backend'de name: 'posts'
       postId
       title
       content
@@ -11,23 +11,24 @@ export const GET_POSTS = gql`
       visibilityScope
       createdAt
       updatedAt
-      files {
-        id
-        url
-        fileType
-      }
       user {
         userId
         firstName
         lastName
+      }
+      files {
+        fileId
+        filename
+        mimetype
+        url
       }
     }
   }
 `;
 
 export const GET_POST = gql`
-  query GetPost($postId: ID!) {
-    getPost(id: $postId) {
+  query GetPost($postId: String!) {
+    post(postId: $postId) {  # <-- Backend'de name: 'post'
       postId
       title
       content
@@ -35,15 +36,16 @@ export const GET_POST = gql`
       visibilityScope
       createdAt
       updatedAt
-      files {
-        id
-        url
-        fileType
-      }
       user {
         userId
         firstName
         lastName
+      }
+      files {
+        fileId
+        filename
+        mimetype
+        url
       }
     }
   }

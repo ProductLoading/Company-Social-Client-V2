@@ -1,47 +1,29 @@
 // src/features/post/hooks.ts
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import {
-  fetchPosts,
-  fetchPostById,
-  createPost,
-  updatePost,
-  deletePost,
-} from './postSlice';
-import type { RootState } from '@/app/store';
-import type { CreatePostDto, UpdatePostDto } from './types';
+import { useQuery, useMutation } from '@apollo/client';
+import { GET_POSTS, GET_POST } from './postQueries';
+import { CREATE_POST, UPDATE_POST, DELETE_POST } from './postMutations';
+import { Post, CreatePostInput, UpdatePostInput } from './types';
 
 export const usePosts = () => {
-  const dispatch = useAppDispatch();
+  const { data, loading, error, refetch } = useQuery(GET_POSTS);
 
-  // Redux store'da post slice'a erişiyoruz
-  const { posts, selectedPost, loading, error } = useAppSelector(
-    (state: RootState) => state.post
-  );
+  const posts: Post[] = data?.getPosts || [];
 
-  // Postları yüklemek
-  const loadPosts = () => dispatch(fetchPosts());
+  return { posts, loading, error, refetch };
+};
 
-  // Tek post detayını yüklemek
-  const loadPostById = (postId: string) => dispatch(fetchPostById(postId));
+export const useCreatePost = () => {
+  return useMutation(CREATE_POST);
+};
 
-  // Yeni post eklemek
-  const addPost = (dto: CreatePostDto) => dispatch(createPost(dto));
+export const useUpdatePost = () => {
+  return useMutation(UPDATE_POST);
+};
 
-  // Post güncellemek
-  const modifyPost = (dto: UpdatePostDto) => dispatch(updatePost(dto));
+export const useDeletePost = () => {
+  return useMutation(DELETE_POST);
+};
 
-  // Post silmek
-  const removePost = (postId: string) => dispatch(deletePost(postId));
-
-  return {
-    posts,
-    selectedPost,
-    loading,
-    error,
-    loadPosts,
-    loadPostById,
-    addPost,
-    modifyPost,
-    removePost,
-  };
+export const useGetPost = (postId: string) => {
+  return useQuery(GET_POST, { variables: { postId } });
 };
