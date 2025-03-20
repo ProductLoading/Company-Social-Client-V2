@@ -22,6 +22,7 @@ const initialState: PostState = {
 // **FETCH ALL POSTS (posts)**
 export const fetchPosts = createAsyncThunk('post/fetchPosts', async () => {
   const { data } = await apolloClient.query({ query: GET_POSTS });
+  await console.log("fetchPosts ", data)
   return data.posts;
 });
 

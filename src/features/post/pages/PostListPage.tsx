@@ -8,12 +8,11 @@ import { useNavigate } from 'react-router-dom';
 const PostListPage: React.FC = () => {
   const navigate = useNavigate();
   const { data, loading, error } = useQuery(GET_POSTS);
-
   if (loading) return <Spin />;
   if (error) return <p style={{ color: 'red' }}>Error: {error.message}</p>;
 
-  const posts = data?.getPosts || [];
-
+  const posts = data?.posts || [];
+  console.log("POST", data.posts)
   return (
     <div>
       <h2>All Posts</h2>
