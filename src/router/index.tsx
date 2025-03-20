@@ -14,8 +14,8 @@ import OfficeListPage from '@/features/office/pages/OfficeListPage';
 import OfficeCreatePage from '@/features/office/pages/OfficeCreatePage';
 import OfficeEditPage from '@/features/office/pages/OfficeEditPage';
 import OfficeDetailPage from '@/features/office/pages/OfficeDetailPage';
+import ManagementRoutes from './ManagementRoutes';
 // import CommentListPage from '@/features/comment/pages/CommentListPage';
-
 
 const AppRouter: React.FC = () => {
     return (
@@ -42,7 +42,8 @@ const AppRouter: React.FC = () => {
                     <Route path="/offices/create" element={<OfficeCreatePage />} />
                     <Route path="/offices/edit/:officeId" element={<OfficeEditPage />} />
                     <Route path="/offices/:officeId" element={<OfficeDetailPage />} />
-
+                    {/* Management panel routes */}
+                    <Route path="/*" element={<ManagementRoutes />} />
                 </Routes>
             </Layout>
         </BrowserRouter>
