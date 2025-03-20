@@ -1,59 +1,48 @@
 // src/features/office/hooks.ts
-import { useSelector, useDispatch } from 'react-redux';
-import type { RootState } from '@/app/store';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import {
-    fetchOffices,
-    fetchOfficeById,
-    createOffice,
-    updateOffice,
-    removeOffice,
+  fetchOffices,
+  fetchOfficeById,
+  createOffice,
+  updateOffice,
+  removeOffice,
 } from './officeSlice';
 import type { CreateOfficeInput, UpdateOfficeInput } from './types';
 
 export function useOfficeList() {
-    const dispatch = useDispatch();
-    const { offices, loading, error } = useSelector((state: RootState) => state.office);
+  const dispatch = useAppDispatch();
+  const { offices, loading, error } = useAppSelector((state) => state.office);
 
-    const loadOffices = (limit?: number, offset?: number) => {
-        dispatch(fetchOffices({ limit, offset }));
-    };
+  const loadOffices = async (limit?: number, offset?: number) => {
+    await dispatch(fetchOffices({ limit, offset })).unwrap();
+  };
 
-    return {
-        offices,
-        loading,
-        error,
-        loadOffices,
-    };
+  return { offices, loading, error, loadOffices };
 }
 
 export function useOfficeDetail() {
-    const dispatch = useDispatch();
-    const { selectedOffice, loading, error } = useSelector(
-        (state: RootState) => state.office
-    );
+  const dispatch = useAppDispatch();
+  const { selectedOffice, loading, error } = useAppSelector((state) => state.office);
 
-    const loadOfficeById = (officeId: string) => {
-        dispatch(fetchOfficeById(officeId));
-    };
+  const loadOfficeById = async (officeId: string) => {
+    await dispatch(fetchOfficeById(officeId)).unwrap();
+  };
 
-    return {
-        selectedOffice,
-        loading,
-        error,
-        loadOfficeById,
-    };
+  return { selectedOffice, loading, error, loadOfficeById };
 }
 
 export function useOfficeActions() {
-    const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-    const addOffice = (input: CreateOfficeInput) => dispatch(createOffice(input));
-    const editOffice = (input: UpdateOfficeInput) => dispatch(updateOffice(input));
-    const deleteOffice = (officeId: string) => dispatch(removeOffice(officeId));
+  const addOffice = async (input: CreateOfficeInput) => {
+    return dispatch(createOffice(input)).unwrap();
+  };
+  const editOffice = async (input: UpdateOfficeInput) => {
+    return dispatch(updateOffice(input)).unwrap();
+  };
+  const deleteOffice = async (officeId: string) => {
+    return dispatch(removeOffice(officeId)).unwrap();
+  };
 
-    return {
-        addOffice,
-        editOffice,
-        deleteOffice,
-    };
+  return { addOffice, editOffice, deleteOffice };
 }

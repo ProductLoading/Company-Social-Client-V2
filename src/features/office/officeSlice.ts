@@ -4,166 +4,183 @@ import apolloClient from '@/graphql/apolloClient';
 import { GET_OFFICES, GET_OFFICE } from './officeQueries';
 import { CREATE_OFFICE, UPDATE_OFFICE, REMOVE_OFFICE } from './officeMutations';
 import type { Office, CreateOfficeInput, UpdateOfficeInput } from './types';
+import type { RootState } from '@/app/store';
 
 interface OfficeState {
-    offices: Office[];
-    selectedOffice: Office | null;
-    loading: boolean;
-    error: string | null;
+  offices: Office[];
+  selectedOffice: Office | null;
+  loading: boolean;
+  error: string | null;
 }
 
 const initialState: OfficeState = {
-    offices: [],
-    selectedOffice: null,
-    loading: false,
-    error: null,
+  offices: [],
+  selectedOffice: null,
+  loading: false,
+  error: null,
 };
 
-// **FETCH OFFICES** (list)
-export const fetchOffices = createAsyncThunk(
-    'office/fetchOffices',
-    async ({ limit, offset }: { limit?: number; offset?: number }) => {
-        const { data } = await apolloClient.query({
-            query: GET_OFFICES,
-            variables: { limit, offset },
-        });
-        return data.offices as Office[];
-    }
+// FETCH ALL OFFICES
+export const fetchOffices = createAsyncThunk<Office[], { limit?: number; offset?: number }>(
+  'office/fetchOffices',
+  async ({ limit, offset }) => {
+    const { data } = await apolloClient.query({
+      query: GET_OFFICES,
+      variables: { limit, offset },
+    });
+    return data.offices;
+  }
 );
 
-// **FETCH SINGLE OFFICE** (detail)
-export const fetchOfficeById = createAsyncThunk(
-    'office/fetchOfficeById',
-    async (officeId: string) => {
-        const { data } = await apolloClient.query({
-            query: GET_OFFICE,
-            variables: { officeId },
-        });
-        return data.office as Office;
-    }
+// FETCH SINGLE OFFICE
+export const fetchOfficeById = createAsyncThunk<Office, string>(
+  'office/fetchOfficeById',
+  async (officeId) => {
+    const { data } = await apolloClient.query({
+      query: GET_OFFICE,
+      variables: { officeId },
+    });
+    return data.office;
+  }
 );
 
-// **CREATE OFFICE**
-export const createOffice = createAsyncThunk(
-    'office/createOffice',
-    async (input: CreateOfficeInput) => {
-        const { data } = await apolloClient.mutate({
-            mutation: CREATE_OFFICE,
-            variables: { input },
-        });
-        return data.createOffice as Office;
-    }
+// CREATE OFFICE
+export const createOffice = createAsyncThunk<Office, CreateOfficeInput, { state: RootState }>(
+  'office/createOffice',
+  async (input, { getState }) => {
+    const state = getState();
+    const token = state.user.token;
+    const { data } = await apolloClient.mutate({
+      mutation: CREATE_OFFICE,
+      variables: { input },
+      context: {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    });
+    return data.createOffice;
+  }
 );
 
-// **UPDATE OFFICE**
-export const updateOffice = createAsyncThunk(
-    'office/updateOffice',
-    async (input: UpdateOfficeInput) => {
-        const { data } = await apolloClient.mutate({
-            mutation: UPDATE_OFFICE,
-            variables: { input },
-        });
-        return data.updateOffice as Office;
-    }
+// UPDATE OFFICE
+export const updateOffice = createAsyncThunk<Office, UpdateOfficeInput, { state: RootState }>(
+  'office/updateOffice',
+  async (input, { getState }) => {
+    const state = getState();
+    const token = state.user.token;
+    const { data } = await apolloClient.mutate({
+      mutation: UPDATE_OFFICE,
+      variables: { input },
+      context: {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    });
+    return data.updateOffice;
+  }
 );
 
-// **REMOVE OFFICE**
-export const removeOffice = createAsyncThunk(
-    'office/removeOffice',
-    async (officeId: string) => {
-        await apolloClient.mutate({
-            mutation: REMOVE_OFFICE,
-            variables: { officeId },
-        });
-        return officeId; // Dönen veri boolean, ama id'yi slice'dan ayıklamak için
-    }
+// REMOVE OFFICE
+export const removeOffice = createAsyncThunk<string, string, { state: RootState }>(
+  'office/removeOffice',
+  async (officeId, { getState }) => {
+    const state = getState();
+    const token = state.user.token;
+    await apolloClient.mutate({
+      mutation: REMOVE_OFFICE,
+      variables: { officeId },
+      context: {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    });
+    return officeId;
+  }
 );
 
 const officeSlice = createSlice({
-    name: 'office',
-    initialState,
-    reducers: {
-        clearSelectedOffice: (state) => {
-            state.selectedOffice = null;
-        },
+  name: 'office',
+  initialState,
+  reducers: {
+    clearSelectedOffice: (state) => {
+      state.selectedOffice = null;
     },
-    extraReducers: (builder) => {
-        // FETCH OFFICES
-        builder.addCase(fetchOffices.pending, (state) => {
-            state.loading = true;
-            state.error = null;
-        });
-        builder.addCase(fetchOffices.fulfilled, (state, action) => {
-            state.loading = false;
-            state.offices = action.payload;
-        });
-        builder.addCase(fetchOffices.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.error.message || 'Failed to fetch offices';
-        });
+  },
+  extraReducers: (builder) => {
+    builder
+      // FETCH OFFICES
+      .addCase(fetchOffices.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchOffices.fulfilled, (state, action) => {
+        state.loading = false;
+        state.offices = action.payload;
+      })
+      .addCase(fetchOffices.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to fetch offices';
+      })
 
-        // FETCH SINGLE
-        builder.addCase(fetchOfficeById.pending, (state) => {
-            state.loading = true;
-            state.error = null;
-        });
-        builder.addCase(fetchOfficeById.fulfilled, (state, action) => {
-            state.loading = false;
-            state.selectedOffice = action.payload;
-        });
-        builder.addCase(fetchOfficeById.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.error.message || 'Failed to fetch office';
-        });
+      // FETCH SINGLE
+      .addCase(fetchOfficeById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchOfficeById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.selectedOffice = action.payload;
+      })
+      .addCase(fetchOfficeById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to fetch office';
+      })
 
-        // CREATE
-        builder.addCase(createOffice.pending, (state) => {
-            state.loading = true;
-            state.error = null;
-        });
-        builder.addCase(createOffice.fulfilled, (state, action) => {
-            state.loading = false;
-            state.offices.push(action.payload);
-        });
-        builder.addCase(createOffice.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.error.message || 'Failed to create office';
-        });
+      // CREATE
+      .addCase(createOffice.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createOffice.fulfilled, (state, action) => {
+        state.loading = false;
+        state.offices.push(action.payload);
+      })
+      .addCase(createOffice.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to create office';
+      })
 
-        // UPDATE
-        builder.addCase(updateOffice.pending, (state) => {
-            state.loading = true;
-            state.error = null;
-        });
-        builder.addCase(updateOffice.fulfilled, (state, action) => {
-            state.loading = false;
-            const updatedOffice = action.payload;
-            const idx = state.offices.findIndex(o => o.officeId === updatedOffice.officeId);
-            if (idx >= 0) state.offices[idx] = updatedOffice;
-            if (state.selectedOffice?.officeId === updatedOffice.officeId) {
-                state.selectedOffice = updatedOffice;
-            }
-        });
-        builder.addCase(updateOffice.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.error.message || 'Failed to update office';
-        });
+      // UPDATE
+      .addCase(updateOffice.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateOffice.fulfilled, (state, action) => {
+        state.loading = false;
+        const updated = action.payload;
+        const idx = state.offices.findIndex((o) => o.officeId === updated.officeId);
+        if (idx !== -1) state.offices[idx] = updated;
+        if (state.selectedOffice?.officeId === updated.officeId) {
+          state.selectedOffice = updated;
+        }
+      })
+      .addCase(updateOffice.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to update office';
+      })
 
-        // REMOVE
-        builder.addCase(removeOffice.pending, (state) => {
-            state.loading = true;
-            state.error = null;
-        });
-        builder.addCase(removeOffice.fulfilled, (state, action) => {
-            state.loading = false;
-            const deletedId = action.payload;
-            state.offices = state.offices.filter((o) => o.officeId !== deletedId);
-        });
-        builder.addCase(removeOffice.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.error.message || 'Failed to remove office';
-        });
-    },
+      // REMOVE
+      .addCase(removeOffice.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(removeOffice.fulfilled, (state, action) => {
+        state.loading = false;
+        const deletedId = action.payload;
+        state.offices = state.offices.filter((o) => o.officeId !== deletedId);
+      })
+      .addCase(removeOffice.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to remove office';
+      });
+  },
 });
 
 export const { clearSelectedOffice } = officeSlice.actions;

@@ -1,62 +1,44 @@
 // src/features/office/pages/OfficeCreatePage.tsx
 import React, { useState } from 'react';
-import { useOfficeActions } from '../hooks';
-import { CreateOfficeInput } from '../types';
+import { Form, Input, Button, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { useOfficeActions } from '../hooks';
 
 const OfficeCreatePage: React.FC = () => {
     const navigate = useNavigate();
     const { addOffice } = useOfficeActions();
-    const [formData, setFormData] = useState<CreateOfficeInput>({
-        city: '',
-        buildingName: '',
-        address: '',
-    });
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const onFinish = async (values: any) => {
+        setLoading(true);
         try {
-            await addOffice(formData);
-            alert('Office created!');
+            await addOffice(values);
+            message.success('Office created');
             navigate('/offices');
         } catch (err) {
-            console.error(err);
-            alert('Failed to create office');
+            message.error('Failed to create office');
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div>
+        <div style={{ maxWidth: 600 }}>
             <h2>Create Office</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>City:</label>
-                    <input
-                        required
-                        value={formData.city}
-                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    />
-                </div>
-                <div>
-                    <label>BuildingName:</label>
-                    <input
-                        value={formData.buildingName || ''}
-                        onChange={(e) =>
-                            setFormData({ ...formData, buildingName: e.target.value })
-                        }
-                    />
-                </div>
-                <div>
-                    <label>Address:</label>
-                    <input
-                        value={formData.address || ''}
-                        onChange={(e) =>
-                            setFormData({ ...formData, address: e.target.value })
-                        }
-                    />
-                </div>
-                <button type="submit">Create</button>
-            </form>
+            <Form layout="vertical" onFinish={onFinish}>
+                <Form.Item name="city" label="City" rules={[{ required: true }]}>
+                    <Input />
+                </Form.Item>
+                <Form.Item name="buildingName" label="Building Name">
+                    <Input />
+                </Form.Item>
+                <Form.Item name="address" label="Address">
+                    <Input />
+                </Form.Item>
+                <Button type="primary" htmlType="submit" loading={loading}>
+                    Create
+                </Button>
+            </Form>
         </div>
     );
 };

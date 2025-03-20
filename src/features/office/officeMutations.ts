@@ -1,4 +1,3 @@
-// src/features/office/officeMutations.ts
 import { gql } from '@apollo/client';
 
 export const CREATE_OFFICE = gql`

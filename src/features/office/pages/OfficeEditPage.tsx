@@ -1,85 +1,69 @@
-    // src/features/office/pages/OfficeEditPage.tsx
-import React, { useState, useEffect } from 'react';
+// src/features/office/pages/OfficeEditPage.tsx
+import React, { useEffect, useState } from 'react';
+import { Form, Input, Button, Spin, message } from 'antd';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useOfficeDetail, useOfficeActions } from '../hooks';
-import { UpdateOfficeInput } from '../types';
 
 const OfficeEditPage: React.FC = () => {
-  const { officeId } = useParams();
+  const { officeId } = useParams<{ officeId: string }>();
   const navigate = useNavigate();
   const { selectedOffice, loadOfficeById, loading, error } = useOfficeDetail();
   const { editOffice } = useOfficeActions();
-
-  const [formData, setFormData] = useState<UpdateOfficeInput>({
-    officeId: officeId || '',
-    city: '',
-    buildingName: '',
-    address: '',
-  });
+  const [form] = Form.useForm();
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (officeId) loadOfficeById(officeId);
+    if (officeId) {
+      loadOfficeById(officeId).catch(() => {
+        message.error('Failed to load office');
+      });
+    }
   }, [officeId]);
 
   useEffect(() => {
     if (selectedOffice) {
-      setFormData({
-        officeId: selectedOffice.officeId,
+      form.setFieldsValue({
         city: selectedOffice.city,
-        buildingName: selectedOffice.buildingName || '',
-        address: selectedOffice.address || '',
+        buildingName: selectedOffice.buildingName,
+        address: selectedOffice.address,
       });
     }
   }, [selectedOffice]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onFinish = async (values: any) => {
+    if (!officeId) return;
+    setSaving(true);
     try {
-      await editOffice(formData);
-      alert('Office updated!');
+      await editOffice({ ...values, officeId });
+      message.success('Office updated');
       navigate('/offices');
     } catch (err) {
-      console.error(err);
-      alert('Failed to update office');
+      message.error('Failed to update office');
+    } finally {
+      setSaving(false);
     }
   };
 
-  if (!officeId) return <p>No officeId route param!</p>;
-  if (loading) return <p>Loading office detail...</p>;
-  if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
+  if (loading) return <Spin />;
+  if (error) return <p style={{ color: 'red' }}>{error}</p>;
 
   return (
-    <div>
+    <div style={{ maxWidth: 600 }}>
       <h2>Edit Office</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>City:</label>
-          <input
-            required
-            value={formData.city}
-            onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-          />
-        </div>
-        <div>
-          <label>BuildingName:</label>
-          <input
-            value={formData.buildingName}
-            onChange={(e) =>
-              setFormData({ ...formData, buildingName: e.target.value })
-            }
-          />
-        </div>
-        <div>
-          <label>Address:</label>
-          <input
-            value={formData.address}
-            onChange={(e) =>
-              setFormData({ ...formData, address: e.target.value })
-            }
-          />
-        </div>
-        <button type="submit">Save</button>
-      </form>
+      <Form form={form} layout="vertical" onFinish={onFinish}>
+        <Form.Item name="city" label="City" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+        <Form.Item name="buildingName" label="BuildingName">
+          <Input />
+        </Form.Item>
+        <Form.Item name="address" label="Address">
+          <Input />
+        </Form.Item>
+        <Button type="primary" htmlType="submit" loading={saving}>
+          Update
+        </Button>
+      </Form>
     </div>
   );
 };

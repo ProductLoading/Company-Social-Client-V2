@@ -1,7 +1,8 @@
 // src/features/office/pages/OfficeListPage.tsx
 import React, { useEffect } from 'react';
-import { useOfficeList, useOfficeActions } from '../hooks';
+import { Table, Button, Spin, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { useOfficeList, useOfficeActions } from '../hooks';
 
 const OfficeListPage: React.FC = () => {
   const navigate = useNavigate();
@@ -9,39 +10,66 @@ const OfficeListPage: React.FC = () => {
   const { deleteOffice } = useOfficeActions();
 
   useEffect(() => {
-    loadOffices(10, 0); // Örnek pagination
+    loadOffices().catch(() => {
+      message.error('Failed to load offices');
+    });
   }, []);
 
-  if (loading) return <p>Loading offices...</p>;
-  if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
-
   const handleDelete = async (officeId: string) => {
-    if (!window.confirm('Delete office?')) return;
-    await deleteOffice(officeId);
+    if (!window.confirm('Delete this office?')) return;
+    try {
+      await deleteOffice(officeId);
+      message.success('Office deleted');
+      await loadOffices();
+    } catch (err) {
+      message.error('Failed to delete office');
+    }
   };
+
+  const columns = [
+    {
+      title: 'City',
+      dataIndex: 'city',
+      key: 'city',
+    },
+    {
+      title: 'BuildingName',
+      dataIndex: 'buildingName',
+      key: 'buildingName',
+    },
+    {
+      title: 'Address',
+      dataIndex: 'address',
+      key: 'address',
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (_: any, record: any) => (
+        <>
+          <Button onClick={() => navigate(`/offices/${record.officeId}`)}>Detail</Button>
+          <Button onClick={() => navigate(`/offices/edit/${record.officeId}`)}>Edit</Button>
+          <Button danger onClick={() => handleDelete(record.officeId)}>Delete</Button>
+        </>
+      ),
+    },
+  ];
+
+  if (loading) return <Spin />;
+  if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
 
   return (
     <div>
       <h2>Office List</h2>
-      <button onClick={() => navigate('/offices/create')}>
+      <Button type="primary" onClick={() => navigate('/offices/create')}>
         Create Office
-      </button>
-      <ul>
-        {offices.map((office) => (
-          <li key={office.officeId} style={{ margin: '8px 0' }}>
-            <b>{office.city}</b> - {office.buildingName || 'No name'}{' '}
-            <button onClick={() => navigate(`/offices/${office.officeId}`)}>
-              Detail
-            </button>
-            <button onClick={() => navigate(`/offices/edit/${office.officeId}`)}>
-              Edit
-            </button>
-            <button onClick={() => handleDelete(office.officeId)}>
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
+      </Button>
+      <Table
+        columns={columns}
+        dataSource={offices}
+        rowKey="officeId"
+        style={{ marginTop: 16 }}
+      />
     </div>
   );
 };

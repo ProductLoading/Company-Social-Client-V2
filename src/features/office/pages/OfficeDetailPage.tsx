@@ -1,30 +1,34 @@
 // src/features/office/pages/OfficeDetailPage.tsx
 import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Card, Spin, Button, message } from 'antd';
 import { useOfficeDetail } from '../hooks';
 
 const OfficeDetailPage: React.FC = () => {
-    const { officeId } = useParams();
-    const { selectedOffice, loading, error, loadOfficeById } = useOfficeDetail();
+  const { officeId } = useParams<{ officeId: string }>();
+  const navigate = useNavigate();
+  const { selectedOffice, loading, error, loadOfficeById } = useOfficeDetail();
 
-    useEffect(() => {
-        if (officeId) loadOfficeById(officeId);
-    }, [officeId]);
+  useEffect(() => {
+    if (officeId) {
+      loadOfficeById(officeId).catch(() => {
+        message.error('Failed to load office detail');
+      });
+    }
+  }, [officeId]);
 
-    if (!officeId) return <p>No officeId provided</p>;
-    if (loading) return <p>Loading office detail...</p>;
-    if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
-    if (!selectedOffice) return <p>Office not found</p>;
+  if (loading) return <Spin />;
+  if (error) return <p style={{ color: 'red' }}>{error}</p>;
+  if (!selectedOffice) return <p>Office not found</p>;
 
-    return (
-        <div>
-            <h2>Office Detail</h2>
-            <p><b>ID:</b> {selectedOffice.officeId}</p>
-            <p><b>City:</b> {selectedOffice.city}</p>
-            <p><b>BuildingName:</b> {selectedOffice.buildingName}</p>
-            <p><b>Address:</b> {selectedOffice.address}</p>
-        </div>
-    );
+  return (
+    <Card title={selectedOffice.city} style={{ maxWidth: 600 }}>
+      <p><b>Building:</b> {selectedOffice.buildingName}</p>
+      <p><b>Address:</b> {selectedOffice.address}</p>
+      <Button onClick={() => navigate('/offices')}>Back</Button>
+      <Button onClick={() => navigate(`/offices/edit/${officeId}`)}>Edit</Button>
+    </Card>
+  );
 };
 
 export default OfficeDetailPage;

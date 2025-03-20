@@ -1,8 +1,7 @@
-// src/features/office/officeQueries.ts
 import { gql } from '@apollo/client';
 
 export const GET_OFFICES = gql`
-  query GetOffices($limit: Float, $offset: Float) {
+  query GetOffices($limit: Int , $offset: Int ) {
     offices(limit: $limit, offset: $offset) {
       officeId
       city
