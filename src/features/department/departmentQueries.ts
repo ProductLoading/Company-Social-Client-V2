@@ -6,10 +6,18 @@ export const GET_DEPARTMENTS = gql`
     departments {
       departmentId
       name
+      parentDepartment {
+        departmentId
+        name
+      }
       manager {
         userId
         firstName
         lastName
+      }
+      office {
+        officeId
+        city
       }
       createdAt
       updatedAt
@@ -22,10 +30,18 @@ export const GET_DEPARTMENT = gql`
     department(departmentId: $departmentId) {
       departmentId
       name
+      parentDepartment {
+        departmentId
+        name
+      }
       manager {
         userId
         firstName
         lastName
+      }
+      office {
+        officeId
+        city
       }
       createdAt
       updatedAt

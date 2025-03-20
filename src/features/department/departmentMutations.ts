@@ -6,10 +6,18 @@ export const CREATE_DEPARTMENT = gql`
     createDepartment(input: $input) {
       departmentId
       name
+      parentDepartment {
+        departmentId
+        name
+      }
       manager {
         userId
         firstName
         lastName
+      }
+      office {
+        officeId
+        city
       }
       createdAt
       updatedAt
@@ -22,10 +30,18 @@ export const UPDATE_DEPARTMENT = gql`
     updateDepartment(input: $input) {
       departmentId
       name
+      parentDepartment {
+        departmentId
+        name
+      }
       manager {
         userId
         firstName
         lastName
+      }
+      office {
+        officeId
+        city
       }
       createdAt
       updatedAt
@@ -33,6 +49,7 @@ export const UPDATE_DEPARTMENT = gql`
   }
 `;
 
+// Eklemediysen, silme mutasyonu:
 export const DELETE_DEPARTMENT = gql`
   mutation DeleteDepartment($departmentId: String!) {
     deleteDepartment(departmentId: $departmentId)
