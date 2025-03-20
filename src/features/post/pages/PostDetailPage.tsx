@@ -1,39 +1,58 @@
-// src/features/post/pages/PostDetailPage.tsx
-import React from 'react';
-import { useQuery } from '@apollo/client';
-import { GET_POST } from '../postQueries';
-import { Spin, Button } from 'antd';
+import React, { useEffect } from 'react';
+import { Spin, Button, message } from 'antd';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { fetchPostById, deletePost, clearSelectedPost } from '../postSlice';
 
 const PostDetailPage: React.FC = () => {
   const { postId } = useParams();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
-  const { data, loading, error } = useQuery(GET_POST, {
-    variables: { postId },
-    skip: !postId,
-  });
+  // Redux Store'dan veriyi al
+  const { selectedPost: post, loading, error } = useAppSelector((state) => state.post);
 
-  if (!postId) return <p>Missing postId in route</p>;
+  useEffect(() => {
+    if (postId) {
+      dispatch(fetchPostById(postId));
+    }
+
+    // 🟢 Component unmount edildiğinde `selectedPost` sıfırlansın
+    return () => {
+      dispatch(clearSelectedPost());
+    };
+  }, [dispatch, postId]);
+
+  if (!postId) return <p>⚠️ Missing postId in route</p>;
   if (loading) return <Spin />;
-  if (error) return <p style={{ color: 'red' }}>Error: {error.message}</p>;
+  if (error) return <p style={{ color: 'red' }}>❌ Error: {error}</p>;
+  if (!post) return <p>🚫 Post not found</p>;
 
-  const post = data?.getPost;
-  if (!post) return <p>Post not found</p>;
+  // Post'u silme işlemi
+  const handleDelete = async () => {
+    try {
+      await dispatch(deletePost(postId)).unwrap();
+      message.success('🗑️ Post successfully deleted!');
+      navigate('/posts'); // Silindikten sonra listeye dön
+    } catch (err) {
+      message.error('❌ Failed to delete post');
+    }
+  };
 
   return (
     <div>
-      <h2>Post Detail</h2>
+      <h2>📝 Post Detail</h2>
       <h3>{post.title}</h3>
       <p>{post.content}</p>
-      <p>Type: {post.postType}</p>
-      <p>Visibility: {post.visibilityScope}</p>
-      <p>Author: {post.user.firstName} {post.user.lastName}</p>
-      {post.files?.length > 0 && (
+      <p>📌 Type: {post.postType}</p>
+      <p>👁️ Visibility: {post.visibilityScope}</p>
+      {/* <p>👤 Author: {post.user?.firstName} {post.user?.lastName}</p> */}
+
+      {Array.isArray(post.files) && post.files.length > 0 && (
         <>
-          <h4>Files:</h4>
+          <h4>📂 Files:</h4>
           <ul>
-            {post.files.map((file: any) => (
+            {post.files.map((file) => (
               <li key={file.fileId}>
                 {file.filename} - <a href={file.url}>{file.url}</a>
               </li>
@@ -42,10 +61,9 @@ const PostDetailPage: React.FC = () => {
         </>
       )}
 
-      <Button onClick={() => navigate(`/posts/edit/${postId}`)}>Edit</Button>
-      <Button danger onClick={() => navigate(`/posts/delete/${postId}`)}>
-        Delete
-      </Button>
+
+      <Button type="primary" onClick={() => navigate(`/posts/edit/${postId}`)}>✏️ Edit</Button>
+      <Button danger onClick={handleDelete}>🗑️ Delete</Button>
     </div>
   );
 };

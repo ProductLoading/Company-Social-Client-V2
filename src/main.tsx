@@ -17,7 +17,8 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
         <PersistGate loading={null} persistor={persistor}>
           <ConfigProvider>
             <ApolloProviderWithAuth>
-              <App /></ApolloProviderWithAuth>
+              <App />
+            </ApolloProviderWithAuth>
           </ConfigProvider>
         </PersistGate>
       </ReduxProvider>

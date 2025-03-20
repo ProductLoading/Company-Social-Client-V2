@@ -1,25 +1,30 @@
-// src/features/post/pages/PostListPage.tsx
-import React from 'react';
-import { useQuery } from '@apollo/client';
-import { GET_POSTS } from '../postQueries';
+import React, { useEffect } from 'react';
 import { Spin, Card, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { fetchPosts } from '../postSlice';
 
 const PostListPage: React.FC = () => {
   const navigate = useNavigate();
-  const { data, loading, error } = useQuery(GET_POSTS);
-  if (loading) return <Spin />;
-  if (error) return <p style={{ color: 'red' }}>Error: {error.message}</p>;
+  const dispatch = useAppDispatch();
+  
+  // Redux Store'dan veriyi çek
+  const { posts, loading, error } = useAppSelector((state) => state.post);
 
-  const posts = data?.posts || [];
-  console.log("POST", data.posts)
+  useEffect(() => {
+    dispatch(fetchPosts());
+  }, [dispatch]);
+
+  if (loading) return <Spin />;
+  if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
+
   return (
     <div>
       <h2>All Posts</h2>
       <Button type="primary" onClick={() => navigate('/posts/create')}>
         Create Post
       </Button>
-      {posts.map((post: any) => (
+      {posts.map((post) => (
         <Card
           key={post.postId}
           style={{ marginTop: 16 }}
