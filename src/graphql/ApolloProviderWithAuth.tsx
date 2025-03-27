@@ -21,7 +21,7 @@ const ApolloProviderWithAuth: React.FC<ApolloProviderWithAuthProps> = ({ childre
     const authLink = setContext((_, { headers }) => {
         return {
             headers: {
-                ...headers,
+                ...headers,     
                 Authorization: token ? `Bearer ${token}` : '',
             },
         };
