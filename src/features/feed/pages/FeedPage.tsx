@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, Spin, Form, Input, Select, Button, message, Upload } from 'antd';
 import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
 import { UploadOutlined } from '@ant-design/icons';
-
+import { AddPostForm } from '@/features/post/components/AddPostForm';
 import { useFeed } from '../hooks';
 import type { CreatePostInput } from '../types';
 
@@ -102,75 +102,9 @@ const FeedPage: React.FC = () => {
       <h2>Feed Page</h2>
 
       {/* Dosya yükleme bölümü */}
-      <Card title="Upload Files to an existing Post" style={{ marginBottom: 24 }}>
-        <Input
-          id="postId-input"
-          placeholder="Enter existing postId"
-          style={{ marginBottom: 8 }}
-        />
-        <Upload {...uploadProps}>
-          <Button icon={<UploadOutlined />}>Select Files</Button>
-        </Upload>
-        <Button style={{ marginTop: 8 }} onClick={handleUploadFiles}>
-          Upload to that Post
-        </Button>
-      </Card>
+      <AddPostForm></AddPostForm>
 
-      {/* Yeni post oluşturma bölümü */}
-      <Card title="Create New Post" style={{ marginBottom: 24 }}>
-        <Form form={form} layout="vertical" onFinish={onFinish}>
-          <Form.Item name="title" label="Title" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
 
-          <Form.Item name="content" label="Content" rules={[{ required: true }]}>
-            <Input.TextArea rows={3} />
-          </Form.Item>
-
-          <Form.Item name="postType" label="Post Type" rules={[{ required: true }]}>
-            <Select>
-              <Select.Option value="text">Text</Select.Option>
-              <Select.Option value="poll">Poll</Select.Option>
-              <Select.Option value="event">Event</Select.Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item name="visibilityScope" label="Visibility Scope" rules={[{ required: true }]}>
-            <Select>
-              <Select.Option value="public">Public</Select.Option>
-              <Select.Option value="office">Office</Select.Option>
-              <Select.Option value="department">Department</Select.Option>
-              <Select.Option value="team">Team</Select.Option>
-            </Select>
-          </Form.Item>
-
-          {/* Manual fileIds girmek istersen */}
-          <Form.Item label="File IDs (comma)">
-            <Input
-              onChange={(e) => {
-                const arr = e.target.value
-                  ? e.target.value.split(',').map((s) => s.trim())
-                  : [];
-                setFileIds(arr);
-              }}
-            />
-          </Form.Item>
-
-          <Form.Item name="departmentIds" label="Department IDs (comma)">
-            <Input />
-          </Form.Item>
-          <Form.Item name="teamIds" label="Team IDs (comma)">
-            <Input />
-          </Form.Item>
-          <Form.Item name="officeIds" label="Office IDs (comma)">
-            <Input />
-          </Form.Item>
-
-          <Button htmlType="submit" type="primary">
-            Create Post
-          </Button>
-        </Form>
-      </Card>
 
       {/* Mevcut feed listesi */}
       <h3>Posts in Feed:</h3>
