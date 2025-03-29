@@ -1,131 +1,126 @@
-// features/feed/pages/FeedPage.tsx
-import React, { useEffect, useState } from 'react';
-import { Card, Spin, Form, Input, Select, Button, message, Upload } from 'antd';
-import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
-import { UploadOutlined } from '@ant-design/icons';
+import React, { useEffect } from 'react';
+import {
+  Card,
+  Spin,
+  Typography,
+  Avatar,
+  Space,
+  Tag,
+  Divider,
+  List,
+} from 'antd';
+import { FileOutlined, FileImageOutlined, FilePdfOutlined } from '@ant-design/icons';
 import { AddPostForm } from '@/features/post/components/AddPostForm';
 import { useFeed } from '../hooks';
-import type { CreatePostInput } from '../types';
+import dayjs from 'dayjs';
+
+const { Title, Text, Paragraph } = Typography;
 
 const FeedPage: React.FC = () => {
-  const { posts, loading, error, refetchFeed, addPost, addFileToPost } = useFeed();
-  const [form] = Form.useForm();
-
-  // AntD Upload bileşeni için görsel file listesi
-  const [uploadFileList, setUploadFileList] = useState<UploadFile[]>([]);
-  // GraphQL'e göndereceğimiz gerçek File nesneleri
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  // Post oluştururken eklenecek fileId array
-  const [fileIds, setFileIds] = useState<string[]>([]);
+  const { posts, loading, error, refetchFeed } = useFeed();
 
   useEffect(() => {
-    // Feed'i ilk başta çek
     refetchFeed();
   }, [refetchFeed]);
 
-  // AntD Upload için config
-  const uploadProps: UploadProps = {
-    multiple: true,
-    beforeUpload: () => false, // otomatik yüklemeyi kapat, manuel yapacağız
-    fileList: uploadFileList,
-    onChange(info) {
-      setUploadFileList(info.fileList);
-      const realFiles = info.fileList
-        .map((item) => item.originFileObj)
-        .filter(Boolean) as File[];
-      setSelectedFiles(realFiles);
-    },
+  const getFileIcon = (mimetype: string) => {
+    if (mimetype.includes('pdf')) return <FilePdfOutlined style={{ color: '#d32f2f' }} />;
+    if (mimetype.includes('image')) return <FileImageOutlined style={{ color: '#1890ff' }} />;
+    return <FileOutlined />;
   };
 
-  // Mevcut bir post'a dosya yükleme
-  const handleUploadFiles = async () => {
-    const postIdInput = (document.getElementById('postId-input') as HTMLInputElement)?.value;
-    if (!postIdInput) {
-      message.warning('Please enter a valid postId!');
-      return;
-    }
-    if (!selectedFiles.length) {
-      message.warning('No files selected');
-      return;
-    }
-    try {
-      for (const file of selectedFiles) {
-        await addFileToPost(postIdInput, file);
-      }
-      message.success(`Files uploaded to postId=${postIdInput}`);
-      setUploadFileList([]);
-      setSelectedFiles([]);
-    } catch (err) {
-      console.error(err);
-      message.error('Failed to upload files');
+  const getVisibilityColor = (scope: string) => {
+    switch (scope) {
+      case 'PUBLIC':
+        return 'green';
+      case 'PRIVATE':
+        return 'red';
+      case 'CUSTOM':
+        return 'gold';
+      default:
+        return 'default';
     }
   };
 
-  // Yeni post oluşturma (fileIds vs. alarak)
-  const onFinish = async (values: any) => {
-    const input: CreatePostInput = {
-      title: values.title,
-      content: values.content,
-      postType: values.postType,
-      visibilityScope: values.visibilityScope,
-      fileIds,
-      departmentIds: values.departmentIds
-        ? values.departmentIds.split(',').map((s: string) => s.trim())
-        : [],
-      teamIds: values.teamIds
-        ? values.teamIds.split(',').map((s: string) => s.trim())
-        : [],
-      officeIds: values.officeIds
-        ? values.officeIds.split(',').map((s: string) => s.trim())
-        : [],
-    };
-
-    try {
-      const newPost = await addPost(input);
-      if (newPost) {
-        message.success(`Post created (postId=${newPost.postId})`);
-      }
-      form.resetFields();
-      setFileIds([]);
-    } catch (err) {
-      console.error(err);
-      message.error('Failed to create post');
+  const getPostTypeColor = (type: string) => {
+    switch (type.toLowerCase()) {
+      case 'announcement':
+        return 'blue';
+      case 'poll':
+        return 'purple';
+      case 'question':
+        return 'geekblue';
+      default:
+        return 'default';
     }
   };
 
-  // Loading / Error
-  if (loading) return <Spin />;
+  if (loading) return <Spin tip="Yükleniyor..." style={{ display: 'block', marginTop: 100 }} />;
   if (error) return <p style={{ color: 'red' }}>{error}</p>;
 
   return (
-    <div style={{ maxWidth: 700, margin: '0 auto' }}>
-      <h2>Feed Page</h2>
+    <div style={{ maxWidth: 700, margin: '0 auto', padding: '2rem 1rem' }}>
+      <Title level={2}>📰 Ana Sayfa</Title>
 
-      {/* Dosya yükleme bölümü */}
-      <AddPostForm></AddPostForm>
+      <Card title="Yeni Gönderi Oluştur" style={{ marginBottom: 32 }}>
+        <AddPostForm />
+      </Card>
 
+      <Divider orientation="left">Gönderiler</Divider>
 
+      {posts.map((post) => (
+        <Card key={post.postId} style={{ marginBottom: 24 }}>
+          <Space align="start" style={{ width: '100%' }}>
+            <Avatar size="large">
+              {post.user?.firstName?.[0] ?? '?'}
+            </Avatar>
+            <div style={{ flex: 1 }}>
+              <Space style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                <Text strong>
+                  {post.user?.firstName} {post.user?.lastName}
+                </Text>
+                <Text type="secondary">{dayjs(post.createdAt).format('DD MMM YYYY HH:mm')}</Text>
+              </Space>
 
-      {/* Mevcut feed listesi */}
-      <h3>Posts in Feed:</h3>
-      {posts.map((p) => (
-        <Card key={p.postId} title={p.title} style={{ marginBottom: 16 }}>
-          <p>{p.content}</p>
-          <p>
-            <strong>Author:</strong> {p.user?.firstName} {p.user?.lastName}
-          </p>
-          {p.files && p.files.length > 0 && (
-            <ul>
-              {p.files.map((f) => (
-                <li key={f.fileId}>
-                  <a href={f.url} target="_blank" rel="noreferrer">
-                    {f.filename}
-                  </a>{' '}
-                  ({f.mimetype})
-                </li>
-              ))}
-            </ul>
-          )}
+              <Title level={4} style={{ margin: '8px 0' }}>{post.title}</Title>
+              <Paragraph>{post.content}</Paragraph>
+
+              <Space style={{ marginBottom: 8 }}>
+                <Tag color={getPostTypeColor(post.postType)}>{post.postType.toUpperCase()}</Tag>
+                <Tag color={getVisibilityColor(post.visibilityScope)}>{post.visibilityScope}</Tag>
+              </Space>
+
+              {post?.files && post?.files?.length > 0 && (
+                <div style={{ marginTop: 12 }}>
+                  <Text strong>📎 Dosyalar:</Text>
+                  <List
+                    size="small"
+                    dataSource={post.files}
+                    renderItem={(file) => (
+                      <List.Item style={{ paddingLeft: 0 }}>
+                        {file.mimetype.startsWith('image/') ? (
+                          <img
+                            src={`http://localhost:3000${file.url}`} // ⬅️ dikkat: backend'deki mutlak yolu kullan
+                            alt={file.filename}
+                            style={{ maxWidth: '100%', maxHeight: 300, borderRadius: 8 }}
+                          />
+                        ) : (
+                          <a href={`http://localhost:3000${file.url}`} target="_blank" rel="noreferrer">
+                            <Space>
+                              {getFileIcon(file.mimetype)}
+                              {file.filename}
+                              <Text type="secondary">({file.mimetype})</Text>
+                            </Space>
+                          </a>
+                        )}
+                      </List.Item>
+                    )}
+                  />
+
+                </div>
+              )}
+            </div>
+          </Space>
         </Card>
       ))}
     </div>
