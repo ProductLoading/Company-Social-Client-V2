@@ -4,6 +4,7 @@ import { ApolloProvider } from '@apollo/client';
 import { Provider as ReduxProvider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { ConfigProvider } from 'antd';
+import './app.css';
 
 import App from './App';
 import apolloClient from './graphql/apolloClient';

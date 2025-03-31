@@ -12,6 +12,8 @@ import OfficeDetailPage from '@/features/office/pages/OfficeDetailPage';
 // User pages
 import UserListPage from '@/features/user/pages/UserListPage';
 import UserCreatePage from '@/features/user/pages/UserCreatePage';
+import DepartmentRoutes from './admin/DepartmentRoutes';
+import TeamRoutes from './admin/TeamRoutes';
 // vs. ...
 // Department pages, Team pages, etc.
 
@@ -31,10 +33,11 @@ const ManagementRoutes: React.FC = () => {
                 {/* ... user edit, detail */}
 
                 {/* Department */}
-                {/* ...department routes */}
+                {DepartmentRoutes()}
+
 
                 {/* Team */}
-                {/* ...team routes */}
+                {TeamRoutes()}
 
                 {/* vs. other modules */}
             </Route>

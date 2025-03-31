@@ -3,6 +3,7 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import rootReducer from './rootReducer';
 import { postApi } from '@/features/post/api/postApi';
+import { teamApi } from '@/features/team/teamApi';
 
 const persistConfig = {
   key: 'root',
@@ -11,6 +12,11 @@ const persistConfig = {
   whitelist: ['user'],
 };
 
+const apiMiddlewares = [
+  postApi.middleware,
+  teamApi.middleware,
+  // commentApi.middleware,
+];
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
@@ -18,7 +24,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }).concat(postApi.middleware), // Thunk olmadan middleware çalıştır!
+    }).concat(...apiMiddlewares), // Thunk olmadan middleware çalıştır!
 });
 
 export const persistor = persistStore(store);

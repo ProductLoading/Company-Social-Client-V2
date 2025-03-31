@@ -24,7 +24,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 style={{
                     backgroundColor: '#f5f5f5',
                     boxShadow: '0 1px 4px rgba(0, 0, 0, 0.1)',
-                    padding: '0 24px',
+                    // 24px padding add 
+                    padding: '0 0px',
                     height: '92px',
                 }}
             >
@@ -63,7 +64,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             </Header>
 
 
-            <Content style={{ padding: '24px' }}>{children}</Content>
+            <Content>{children}</Content>
 
             <Footer style={{ textAlign: 'center' }}>© 2025 Company Social</Footer>
         </AntdLayout>

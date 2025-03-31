@@ -15,7 +15,7 @@ import OfficeCreatePage from '@/features/office/pages/OfficeCreatePage';
 import OfficeEditPage from '@/features/office/pages/OfficeEditPage';
 import OfficeDetailPage from '@/features/office/pages/OfficeDetailPage';
 import ManagementRoutes from './ManagementRoutes';
-import DepartmentRoutes from './DepartmentRoutes';
+import DepartmentRoutes from './admin/DepartmentRoutes';
 import FeedPage from '@/features/feed/pages/FeedPage';
 import PostFilePage from '@/features/post-file/PostFilePage';
 import { PostCreatePage } from '@/features/post/pages/postCreatePage';
