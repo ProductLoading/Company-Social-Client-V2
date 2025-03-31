@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import rootReducer from './rootReducer';
-
+import { postApi } from '@/features/post/api/postApi';
 
 const persistConfig = {
   key: 'root',
@@ -18,7 +18,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }), // Thunk olmadan middleware çalıştır!
+    }).concat(postApi.middleware), // Thunk olmadan middleware çalıştır!
 });
 
 export const persistor = persistStore(store);

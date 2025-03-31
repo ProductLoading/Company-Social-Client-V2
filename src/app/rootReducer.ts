@@ -4,6 +4,7 @@ import userReducer from '../features/user/userSlice';
 import officeReducer from "../features/office/officeSlice"
 import departmentReducer from "../features/department/departmentSlice"
 import feedReducer from "../features/feed/feedSlice"
+import { postApi } from '@/features/post/api/postApi';
 
 const rootReducer = combineReducers({
   post: postReducer,
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
   office: officeReducer,
   department: departmentReducer,
   feed: feedReducer,
+  [postApi.reducerPath]: postApi.reducer
 
 
 });
