@@ -1,32 +1,21 @@
-import React, { useEffect } from 'react';
-import { Table, Spin } from 'antd';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { fetchUsers } from '../userSlice';
+// src/features/user/pages/UserListPage.tsx
+import React from 'react';
+import { useUsersQuery } from '../api/userApi';
+import { UserCard } from '../components/UserCard';
 
-const UserListPage: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const { users, loading, error } = useAppSelector((state) => state.user);
+export default function UserListPage() {
+  const { data, isLoading, isError } = useUsersQuery({ limit: 10, offset: 0 });
 
-  useEffect(() => {
-    dispatch(fetchUsers());
-  }, [dispatch]);
-
-  const columns = [
-    // { title: 'ID', dataIndex: 'userId', key: 'userId' },
-    { title: 'Email', dataIndex: 'email', key: 'email' },
-    { title: 'First Name', dataIndex: 'firstName', key: 'firstName' },
-    { title: 'Last Name', dataIndex: 'lastName', key: 'lastName' },
-  ];
-
-  if (loading) return <Spin />;
-  if (error) return <div style={{ color: 'red' }}>Error: {error}</div>;
+  if (isLoading) return <div>Yükleniyor...</div>;
+  if (isError) return <div>Bir hata oluştu!</div>;
+  if (!data) return null;
 
   return (
     <div>
-      <h2 className='text-2xl font-bold'>User List</h2>
-      <Table columns={columns} dataSource={users} rowKey="userId" />
+      <h2>Kullanıcı Listesi</h2>
+      {data.map((user) => (
+        <UserCard key={user.userId} user={user} />
+      ))}
     </div>
   );
-};
-
-export default UserListPage;
+}

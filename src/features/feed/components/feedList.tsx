@@ -61,9 +61,9 @@ export const FeedList: React.FC<FeedListProps> = ({ posts }) => {
                 <Card key={post.postId} style={{ marginBottom: 24 }}>
                     <Space align="start" style={{ width: '100%' }}>
                         <Avatar size="large">
-                            {post.user?.firstName?.[0] ?? '?'}
+                           <img src="https://decisionsystemsgroup.github.io/workshop-html/img/john-doe.jpg" alt="" />
                         </Avatar>
-                        <div className='bg-'></div>
+                    
                         <div style={{ flex: 1 }}>
                             <Space style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                                 <Text strong>

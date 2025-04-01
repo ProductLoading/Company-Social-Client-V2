@@ -1,54 +1,52 @@
 // src/features/user/pages/LoginPage.tsx
-import React from 'react';
-import { Form, Input, Button, message } from 'antd';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { loginUser } from '../userSlice';
+import React, { useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
-const LoginPage: React.FC = () => {
-  const dispatch = useAppDispatch();
+export default function LoginPage() {
+  const { login, isLoading } = useAuth();
   const navigate = useNavigate();
-  const { loading, error } = useAppSelector((state) => state.user);
-  const [form] = Form.useForm();
 
-  const onFinish = async (values: { email: string; password: string }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      await dispatch(loginUser(values)).unwrap();
-      message.success('Login successful!');
-      navigate('/dashboard'); // Kullanıcıyı yönlendiriyoruz (uygun rotaya)
-    } catch (err) {
-      message.error(err as string);
+      await login(email, password);
+      navigate('/users'); // Giriş başarılı -> kullanıcı listesine yönlendir
+    } catch (error) {
+      console.error(error);
+      alert('Giriş başarısız!');
     }
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: '0 auto' }}>
-      <h2>Login</h2>
-      <Form form={form} layout="vertical" onFinish={onFinish}>
-        <Form.Item
-          name="email"
-          label="Email"
-          rules={[{ required: true, type: 'email' }]}
-        >
-          <Input placeholder="user@example.com" />
-        </Form.Item>
-
-        <Form.Item
-          name="password"
-          label="Password"
-          rules={[{ required: true, min: 6 }]}
-        >
-          <Input.Password placeholder="At least 6 characters" />
-        </Form.Item>
-
-        <Button type="primary" htmlType="submit" loading={loading}>
-          Login
-        </Button>
-      </Form>
-
-      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+    <div>
+      <h2>Giriş Yap</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>E-posta:</label>
+          <input
+            type="email"
+            disabled={isLoading}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div>
+          <label>Şifre:</label>
+          <input
+            type="password"
+            disabled={isLoading}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <button disabled={isLoading} type="submit">
+          Giriş Yap
+        </button>
+      </form>
     </div>
   );
-};
-
-export default LoginPage;
+}

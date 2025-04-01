@@ -1,20 +1,18 @@
+// src/features/user/components/UserCard.tsx
 import React from 'react';
-import { Card } from 'antd';
-import { User } from '../types';
+import type { User } from '../types/userTypes';
 
 interface UserCardProps {
   user: User;
 }
 
-const UserCard: React.FC<UserCardProps> = ({ user }) => {
+export const UserCard: React.FC<UserCardProps> = ({ user }) => {
   return (
-    <Card style={{ marginBottom: 16 }}>
-      {/* <p><strong>ID:</strong> {user.userId}</p> */}
-      <p><strong>Email:</strong> {user.email}</p>
-      <p><strong>Name:</strong> {user.firstName} {user.lastName}</p>
-      <p><strong>Status:</strong> {user.status}</p>
-    </Card>
+    <div style={{ border: '1px solid #eee', padding: '8px', margin: '4px 0' }}>
+      <div><strong>ID:</strong> {user.userId}</div>
+      <div><strong>Ad:</strong> {user.firstName}</div>
+      <div><strong>Soyad:</strong> {user.lastName}</div>
+      <div><strong>E-posta:</strong> {user.email}</div>
+    </div>
   );
 };
-
-export default UserCard;
