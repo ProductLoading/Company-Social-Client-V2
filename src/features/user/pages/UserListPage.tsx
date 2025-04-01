@@ -23,11 +23,10 @@ const UserListPage: React.FC = () => {
 
   return (
     <div>
-      <h2>User List</h2>
+      <h2 className='text-2xl font-bold'>User List</h2>
       <Table columns={columns} dataSource={users} rowKey="userId" />
     </div>
   );
 };
 
 export default UserListPage;
-  

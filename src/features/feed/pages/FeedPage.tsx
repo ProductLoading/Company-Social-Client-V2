@@ -18,9 +18,9 @@ const FeedPage: React.FC = () => {
 
   return (
     <div style={{ maxWidth: 700, margin: '0 auto', padding: '2rem 1rem' }}>
-      <Title level={2}>📰 Ana Sayfa</Title>
+      {/* <Title className='mb-24 bg-red-500 text-blue-400 text-xs' level={2}>📰 Ana Sayfa</Title> */}
 
-      <Card title="Yeni Gönderi Oluştur" style={{ marginBottom: 32 }}>
+      <Card title="Create new post" style={{ marginBottom: 32 }}>
         <AddPostForm />
       </Card>
 

@@ -22,7 +22,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <AntdLayout style={{ minHeight: '100vh' }}>
             <Header
                 style={{
-                    backgroundColor: '#f5f5f5',
+                    backgroundColor: '#F5FAFD ',
                     boxShadow: '0 1px 4px rgba(0, 0, 0, 0.1)',
                     // 24px padding add 
                     padding: '0 0px',
@@ -64,10 +64,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             </Header>
 
 
-            <Content>{children}</Content>
+            <Content
+            // style={{ backgroundColor: '#F5FAFD' }}
+            >{children}</Content>
 
             <Footer style={{ textAlign: 'center' }}>© 2025 Company Social</Footer>
-        </AntdLayout>
+        </AntdLayout >
     );
 };
 

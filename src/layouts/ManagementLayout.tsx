@@ -26,9 +26,7 @@ const ManagementLayout: React.FC = () => {
                 </Menu>
             </Sider>
             <Layout>
-                <Header style={{ background: '#fff' }}>
-                    <h2>Management Panel</h2>
-                </Header>
+
                 <Content style={{ margin: '16px' }}>
                     <Outlet />
                     {/* Outlet, /admin/offices gibi alt rotaları burada render edecek */}

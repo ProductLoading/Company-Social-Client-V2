@@ -63,6 +63,7 @@ export const FeedList: React.FC<FeedListProps> = ({ posts }) => {
                         <Avatar size="large">
                             {post.user?.firstName?.[0] ?? '?'}
                         </Avatar>
+                        <div className='bg-'></div>
                         <div style={{ flex: 1 }}>
                             <Space style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                                 <Text strong>
