@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from '@/shared/components/Layout';
 import UserListPage from '@/features/user/pages/UserListPage';
-import UserCreatePage from '@/features/user/pages/UserCreatePage';
+import UserCreatePage from '@/features/user/pages/RegisterPage';
 import RegisterPage from '@/features/user/pages/RegisterPage';
 import LoginPage from '@/features/user/pages/LoginPage';
 // import PostListPage from '@/features/post/pages/PostListPage';
@@ -20,6 +20,7 @@ import FeedPage from '@/features/feed/pages/FeedPage';
 import PostFilePage from '@/features/post-file/PostFilePage';
 import { PostCreatePage } from '@/features/post/pages/postCreatePage';
 // import CommentListPage from '@/features/comment/pages/CommentListPage';
+import MyProfilePage from '@/features/user/pages/MyProfilePage';
 
 
 
@@ -28,6 +29,9 @@ const AppRouter: React.FC = () => {
         <BrowserRouter>
             <Layout>
                 <Routes>
+
+                    {/* Profile */}
+                    <Route path='/profile' element={<MyProfilePage />} />
                     {/* Feed */}
                     <Route path="/feed" element={<FeedPage />} />
                     <Route path="/postfile" element={<PostFilePage />} />

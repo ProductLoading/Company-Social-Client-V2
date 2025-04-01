@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
 export default function LoginPage() {
-  const { login, isLoading } = useAuth();
+  const { login, isAuthLoading } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -29,7 +29,7 @@ export default function LoginPage() {
           <label>E-posta:</label>
           <input
             type="email"
-            disabled={isLoading}
+            disabled={isAuthLoading}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -38,12 +38,12 @@ export default function LoginPage() {
           <label>Şifre:</label>
           <input
             type="password"
-            disabled={isLoading}
+            disabled={isAuthLoading}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <button disabled={isLoading} type="submit">
+        <button disabled={isAuthLoading} type="submit">
           Giriş Yap
         </button>
       </form>

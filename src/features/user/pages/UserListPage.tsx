@@ -1,5 +1,4 @@
 // src/features/user/pages/UserListPage.tsx
-import React from 'react';
 import { useUsersQuery } from '../api/userApi';
 import { UserCard } from '../components/UserCard';
 

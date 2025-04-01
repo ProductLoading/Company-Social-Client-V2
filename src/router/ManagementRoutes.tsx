@@ -11,7 +11,7 @@ import OfficeDetailPage from '@/features/office/pages/OfficeDetailPage';
 
 // User pages
 import UserListPage from '@/features/user/pages/UserListPage';
-import UserCreatePage from '@/features/user/pages/UserCreatePage';
+import UserCreatePage from '@/features/user/pages/RegisterPage';
 import DepartmentRoutes from './admin/DepartmentRoutes';
 import TeamRoutes from './admin/TeamRoutes';
 // vs. ...

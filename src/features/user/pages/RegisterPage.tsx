@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
 export default function RegisterPage() {
-  const { register, isLoading } = useAuth();
+  const { register, isAuthLoading } = useAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -41,7 +41,7 @@ export default function RegisterPage() {
           <input
             name="email"
             type="email"
-            disabled={isLoading}
+            disabled={isAuthLoading}
             value={formData.email}
             onChange={handleChange}
           />
@@ -51,7 +51,7 @@ export default function RegisterPage() {
           <input
             name="password"
             type="password"
-            disabled={isLoading}
+            disabled={isAuthLoading}
             value={formData.password}
             onChange={handleChange}
           />
@@ -60,7 +60,7 @@ export default function RegisterPage() {
           <label>Ad</label>
           <input
             name="firstName"
-            disabled={isLoading}
+            disabled={isAuthLoading}
             value={formData.firstName}
             onChange={handleChange}
           />
@@ -69,7 +69,7 @@ export default function RegisterPage() {
           <label>Soyad</label>
           <input
             name="lastName"
-            disabled={isLoading}
+            disabled={isAuthLoading}
             value={formData.lastName}
             onChange={handleChange}
           />
@@ -78,7 +78,7 @@ export default function RegisterPage() {
           <label>Office ID (opsiyonel)</label>
           <input
             name="officeId"
-            disabled={isLoading}
+            disabled={isAuthLoading}
             value={formData.officeId}
             onChange={handleChange}
           />
@@ -87,12 +87,12 @@ export default function RegisterPage() {
           <label>Profil Resmi URL (opsiyonel)</label>
           <input
             name="profilePictureUrl"
-            disabled={isLoading}
+            disabled={isAuthLoading}
             value={formData.profilePictureUrl}
             onChange={handleChange}
           />
         </div>
-        <button type="submit" disabled={isLoading}>
+        <button type="submit" disabled={isAuthLoading}>
           Kayıt Ol
         </button>
       </form>

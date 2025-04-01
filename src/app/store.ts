@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage';
 import rootReducer from './rootReducer';
 import { postApi } from '@/features/post/api/postApi';
 import { teamApi } from '@/features/team/teamApi';
+import { userApi } from '@/features/user/api/userApi';
 
 const persistConfig = {
   key: 'root',
@@ -15,6 +16,7 @@ const persistConfig = {
 const apiMiddlewares = [
   postApi.middleware,
   teamApi.middleware,
+  userApi.middleware
   // commentApi.middleware,
 ];
 const persistedReducer = persistReducer(persistConfig, rootReducer);
