@@ -38,7 +38,7 @@ export const userApi = createApi({
     }),
 
     /** LOGIN MUTATION -> email/password */
-    login: builder.mutation<{ login: string }, { email: string; password: string }>({
+    login: builder.mutation<{  data: { login: string } }, { email: string; password: string }>({
       query: (credentials) => ({
         url: '',
         method: 'POST',

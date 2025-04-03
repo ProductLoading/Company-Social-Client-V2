@@ -18,23 +18,27 @@ export function useAuth() {
   /** LOGIN */
   const login = useCallback(
     async (email: string, password: string) => {
-      const { login: accessToken } = await loginMutation({ email, password }).unwrap();
+      const { data: { login: accessToken } } = await loginMutation({ email, password }).unwrap();
       dispatch(setCredentials({ token: accessToken }));
-      // Kullanıcı bilgisi çek
-      const meResp = await refetchMe();
-      if (meResp.data) {
-        dispatch(
-          setUserInfo({
-            userId: meResp.data.userId,
-            email: meResp.data.email,
-            firstName: meResp.data.firstName,
-            lastName: meResp.data.lastName,
-          })
-        );
+
+      if (accessToken) {
+        const meResp = await refetchMe();
+        if (meResp.data) {
+          dispatch(
+            setUserInfo({
+              userId: meResp.data.userId,
+              email: meResp.data.email,
+              firstName: meResp.data.firstName,
+              lastName: meResp.data.lastName,
+            })
+          );
+        }
       }
     },
     [dispatch, loginMutation, refetchMe]
   );
+
+
 
   /** REGISTER */
   const register = useCallback(
