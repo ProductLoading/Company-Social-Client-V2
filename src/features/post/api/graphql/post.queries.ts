@@ -1,5 +1,5 @@
 // 🧠 gql ile GraphQL sorgu ve mutasyonlar
-import { gql } from '@apollo/client';
+import { gql } from 'graphql-tag';
 
 export const CREATE_POST = gql`
   mutation CreatePost($createPostInput: CreatePostInput!) {

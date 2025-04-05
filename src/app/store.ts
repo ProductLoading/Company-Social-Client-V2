@@ -5,6 +5,7 @@ import rootReducer from './rootReducer';
 import { postApi } from '@/features/post/api/postApi';
 import { teamApi } from '@/features/team/teamApi';
 import { userApi } from '@/features/user/api/userApi';
+import { socialApi } from '@/graphql/socialApi';
 
 const persistConfig = {
   key: 'root',
@@ -16,7 +17,9 @@ const persistConfig = {
 const apiMiddlewares = [
   postApi.middleware,
   teamApi.middleware,
-  userApi.middleware
+  userApi.middleware,
+  socialApi.middleware
+
   // commentApi.middleware,
 ];
 const persistedReducer = persistReducer(persistConfig, rootReducer);

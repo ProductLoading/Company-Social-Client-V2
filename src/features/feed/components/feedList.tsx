@@ -15,6 +15,9 @@ import {
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { Post } from '../types';
+import CommentForm from '@/features/comment/components/CommentForm';
+import { useAppSelector } from '@/app/hooks';
+
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -74,6 +77,10 @@ interface FeedListProps {
  * FeedList Bileşeni
  */
 export const FeedList: React.FC<FeedListProps> = ({ posts }) => {
+
+
+  const userId = useAppSelector((state) => state?.user?.userId);
+
   return (
     <>
       {posts.map((post) => (
@@ -176,14 +183,11 @@ export const FeedList: React.FC<FeedListProps> = ({ posts }) => {
                     dataSource={post.comments}
                     renderItem={(comment) => (
                       <List.Item style={{ paddingLeft: 0 }}>
-                        {/* Basit bir yorum yapısı */}
+
                         <Space align="start">
-                          {/* Yorum dosyaları yoksa resim göstermeyiz, 
-                              veya bir avatar koymak istersen buraya koyabilirsin.
-                              Mesela: <Avatar src="..."/> */}
+
                           <div>
                             <Text strong>
-                              {/* Gerçek kullanıcı bilgileri yoksa 'Anonim' */}
                               {comment.user?.firstName
                                 ? `${comment.user.firstName} ${comment.user.lastName}`
                                 : 'Kullanıcı Bilgisi Yok'}
@@ -197,7 +201,6 @@ export const FeedList: React.FC<FeedListProps> = ({ posts }) => {
                               )}
                             </Text>
 
-                            {/* Yorum içindeki dosyalar */}
                             {comment.files && comment.files.length > 0 && (
                               <List
                                 style={{ marginTop: 8 }}
@@ -242,6 +245,10 @@ export const FeedList: React.FC<FeedListProps> = ({ posts }) => {
                   />
                 </>
               )}
+
+              {userId && <CommentForm postId={post.postId} userId={userId} />}
+              {/* <CommentList postId={post.postId} /> */}
+
             </div>
           </Space>
         </Card>

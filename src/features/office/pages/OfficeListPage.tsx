@@ -61,7 +61,7 @@ const OfficeListPage: React.FC = () => {
   return (
     <div>
       <div className='flex justify-between mb-20'>
-        <h2 className='mb-20 text-2xl font-bold mb-20'>Office List</h2>
+        <h2 className='mb-20 text-2xl font-bold'>Office List</h2>
         <Button type="primary" onClick={() => navigate('/offices/create')}>
           Create Office
         </Button>
